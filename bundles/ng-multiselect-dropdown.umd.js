@@ -303,9 +303,7 @@
                 showSelectedItemsAtTop: false,
                 defaultOpen: false,
                 allowRemoteDataSearch: false,
-                priorityList: true,
-                priorityTitle: 'Selected',
-                normalTitle: 'To be selected'
+                priorityList: false,
             };
             this.disabled = false;
             this.onFilterChange = new core.EventEmitter();
