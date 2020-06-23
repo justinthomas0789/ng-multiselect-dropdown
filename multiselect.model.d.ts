@@ -17,9 +17,9 @@ export interface IDropdownSettings {
     showSelectedItemsAtTop?: boolean;
     defaultOpen?: boolean;
     allowRemoteDataSearch?: boolean;
-    showSelectedList?: boolean;
-    selectedListTitle?: string;
-    selectionListTitle?: string;
+    priorityList?: boolean;
+    priorityTitle?: string;
+    normalTitle?: string;
 }
 export declare class ListItem {
     id: string | number;

@@ -1,13 +1,14 @@
-import { EventEmitter, ChangeDetectorRef } from "@angular/core";
-import { ControlValueAccessor } from "@angular/forms";
-import { ListItem, IDropdownSettings } from "./multiselect.model";
-import { ListFilterPipe } from "./list-filter.pipe";
+import { EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { ControlValueAccessor } from '@angular/forms';
+import { ListItem, IDropdownSettings } from './multiselect.model';
+import { ListFilterPipe } from './list-filter.pipe';
 export declare const DROPDOWN_CONTROL_VALUE_ACCESSOR: any;
 export declare class MultiSelectComponent implements ControlValueAccessor {
     private cdr;
     private listFilterPipe;
     _settings: IDropdownSettings;
     _data: Array<ListItem>;
+    _priorityData: Array<ListItem>;
     selectedItems: Array<ListItem>;
     isDropdownOpen: boolean;
     _placeholder: string;
@@ -18,6 +19,7 @@ export declare class MultiSelectComponent implements ControlValueAccessor {
     placeholder: string;
     disabled: boolean;
     settings: IDropdownSettings;
+    priorityData: Array<any>;
     data: Array<any>;
     onFilterChange: EventEmitter<ListItem>;
     onDropDownClose: EventEmitter<ListItem>;

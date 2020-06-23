@@ -1,6 +1,4 @@
 # Angular Multiselect Dropdown
-# This is a forked version of [ng-multiselect-dropdown](https://github.com/nileshpatel17/ng-multiselect-dropdown)
-# Forked and changed layout, by Justin
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-6-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
@@ -10,6 +8,8 @@
 [![downloads](https://img.shields.io/npm/dm/ng-multiselect-dropdown.svg)](https://www.npmjs.com/package/ng-multiselect-dropdown)
 
 Angular multiselect dropdown component for web applications. Easy to integrate and use. It can be bind to any custom data source.
+
+# [Demo](https://nileshpatel17.github.io/ng-multiselect-dropdown/)
 
 ![demo](Screenshots/ng-multiselect-dropdown_v0.1.6.gif)
 
@@ -122,9 +122,6 @@ export class AppComponent implements OnInit {
 | closeDropDownOnSelection       | Boolean    | Closes the dropdown when item is selected. applicable only in cas of single selection                                                                                                                                                                                                                                                                    | false               |
 | defaultOpen                    | Boolean    | open state of dropdown                                                                                                                                                                                                                                                                                                                                   | false               |
 | allowRemoteDataSearch                    | Boolean    | allow search remote api if no data is present.                                                                                                                                                                                                                                                                                                                                   | false               |
-| showSelectedList                    | Boolean    | allow display selected items in the top of dropdown list                                                                                                                                                                                                                                                                                                                                    | false               |
-| selectedListTitle                    | String    | Show custom title for selected list  only if showSelectedList is true                                                                                                                                                                                                                                                                                                                                   | empty               |
-| selectionListTitle                    | String    | Show custom title for remaining list only if showSelectedList is true                                                                                                                                                                                                                                                                                                                                    | empty               |
 
 
 ### Callback Methods

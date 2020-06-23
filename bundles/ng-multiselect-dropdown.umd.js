@@ -277,34 +277,35 @@
             this.cdr = cdr;
             this.listFilterPipe = listFilterPipe;
             this._data = [];
+            this._priorityData = [];
             this.selectedItems = [];
             this.isDropdownOpen = true;
-            this._placeholder = "Select";
+            this._placeholder = 'Select';
             this._sourceDataType = null; // to keep note of the source data type. could be array of string/number/object
             this._sourceDataFields = []; // store source data fields names
             this.filter = new ListItem(this.data);
             this.defaultSettings = {
                 singleSelection: false,
-                idField: "id",
-                textField: "text",
-                disabledField: "isDisabled",
+                idField: 'id',
+                textField: 'text',
+                disabledField: 'isDisabled',
                 enableCheckAll: true,
-                selectAllText: "Select All",
-                unSelectAllText: "UnSelect All",
+                selectAllText: 'Select All',
+                unSelectAllText: 'UnSelect All',
                 allowSearchFilter: false,
                 limitSelection: -1,
                 clearSearchFilter: true,
                 maxHeight: 197,
                 itemsShowLimit: 999999999999,
-                searchPlaceholderText: "Search",
-                noDataAvailablePlaceholderText: "No data available",
+                searchPlaceholderText: 'Search',
+                noDataAvailablePlaceholderText: 'No data available',
                 closeDropDownOnSelection: false,
-                showSelectedItemsAtTop: true,
+                showSelectedItemsAtTop: false,
                 defaultOpen: false,
                 allowRemoteDataSearch: false,
-                showSelectedList: true,
-                selectedListTitle: 'selected',
-                selectionListTitle: 'To be'
+                priorityList: true,
+                priorityTitle: 'Selected',
+                normalTitle: 'To be selected'
             };
             this.disabled = false;
             this.onFilterChange = new core.EventEmitter();
@@ -322,7 +323,7 @@
                     this._placeholder = value;
                 }
                 else {
-                    this._placeholder = "Select";
+                    this._placeholder = 'Select';
                 }
             },
             enumerable: true,
@@ -340,6 +341,27 @@
             enumerable: true,
             configurable: true
         });
+        Object.defineProperty(MultiSelectComponent.prototype, "priorityData", {
+            set: function (value) {
+                var _this = this;
+                if (value) {
+                    this._priorityData = value.map(function (item) {
+                        return typeof item === 'string' || typeof item === 'number'
+                            ? new ListItem(item)
+                            : new ListItem({
+                                id: item[_this._settings.idField],
+                                text: item[_this._settings.textField],
+                                isDisabled: item[_this._settings.disabledField]
+                            });
+                    });
+                }
+                else {
+                    this._priorityData = [];
+                }
+            },
+            enumerable: true,
+            configurable: true
+        });
         Object.defineProperty(MultiSelectComponent.prototype, "data", {
             set: function (value) {
                 var _this = this;
@@ -351,7 +373,7 @@
                     this._sourceDataType = typeof firstItem;
                     this._sourceDataFields = this.getFields(firstItem);
                     this._data = value.map(function (item) {
-                        return typeof item === "string" || typeof item === "number"
+                        return typeof item === 'string' || typeof item === 'number'
                             ? new ListItem(item)
                             : new ListItem({
                                 id: item[_this._settings.idField],
@@ -393,7 +415,7 @@
                         if (value.length >= 1) {
                             var firstItem = value[0];
                             this.selectedItems = [
-                                typeof firstItem === "string" || typeof firstItem === "number"
+                                typeof firstItem === 'string' || typeof firstItem === 'number'
                                     ? new ListItem(firstItem)
                                     : new ListItem({
                                         id: firstItem[this._settings.idField],
@@ -409,7 +431,7 @@
                 }
                 else {
                     var _data = value.map(function (item) {
-                        return typeof item === "string" || typeof item === "number"
+                        return typeof item === 'string' || typeof item === 'number'
                             ? new ListItem(item)
                             : new ListItem({
                                 id: item[_this._settings.idField],
@@ -551,7 +573,7 @@
             this._settings.defaultOpen = false;
             // clear search text
             if (this._settings.clearSearchFilter) {
-                this.filter.text = "";
+                this.filter.text = '';
             }
             this.onDropDownClose.emit();
         };
@@ -572,7 +594,7 @@
         };
         MultiSelectComponent.prototype.getFields = function (inputData) {
             var fields = [];
-            if (typeof inputData !== "object") {
+            if (typeof inputData !== 'object') {
                 return fields;
             }
             // tslint:disable-next-line:forin
@@ -596,35 +618,38 @@
         ], MultiSelectComponent.prototype, "settings", null);
         __decorate([
             core.Input()
+        ], MultiSelectComponent.prototype, "priorityData", null);
+        __decorate([
+            core.Input()
         ], MultiSelectComponent.prototype, "data", null);
         __decorate([
-            core.Output("onFilterChange")
+            core.Output('onFilterChange')
         ], MultiSelectComponent.prototype, "onFilterChange", void 0);
         __decorate([
-            core.Output("onDropDownClose")
+            core.Output('onDropDownClose')
         ], MultiSelectComponent.prototype, "onDropDownClose", void 0);
         __decorate([
-            core.Output("onSelect")
+            core.Output('onSelect')
         ], MultiSelectComponent.prototype, "onSelect", void 0);
         __decorate([
-            core.Output("onDeSelect")
+            core.Output('onDeSelect')
         ], MultiSelectComponent.prototype, "onDeSelect", void 0);
         __decorate([
-            core.Output("onSelectAll")
+            core.Output('onSelectAll')
         ], MultiSelectComponent.prototype, "onSelectAll", void 0);
         __decorate([
-            core.Output("onDeSelectAll")
+            core.Output('onDeSelectAll')
         ], MultiSelectComponent.prototype, "onDeSelectAll", void 0);
         __decorate([
-            core.HostListener("blur")
+            core.HostListener('blur')
         ], MultiSelectComponent.prototype, "onTouched", null);
         MultiSelectComponent = __decorate([
             core.Component({
                 selector: "ng-multiselect-dropdown",
-                template: "<div tabindex=\"=0\" (blur)=\"onTouched()\" class=\"multiselect-dropdown\" (clickOutside)=\"closeDropdown()\">\n  <div [class.disabled]=\"disabled\">\n    <span tabindex=\"-1\" class=\"dropdown-btn\" (click)=\"toggleDropdown($event)\">\n      <span *ngIf=\"selectedItems.length == 0\">{{_placeholder}}</span>\n      <span class=\"selected-item\" *ngFor=\"let item of selectedItems;trackBy: trackByFn;let k = index\" [hidden]=\"k > _settings.itemsShowLimit-1\">\n        {{item.text}}\n        <a style=\"padding-top:2px;padding-left:2px;color:white\" (click)=\"onItemClick($event,item)\">x</a>\n      </span>\n      <span style=\"float:right !important;padding-right:4px\">\n        <span style=\"padding-right: 6px;\" *ngIf=\"itemShowRemaining()>0\">+{{itemShowRemaining()}}</span>\n        <span [ngClass]=\"_settings.defaultOpen ? 'dropdown-up' : 'dropdown-down'\"></span>\n      </span>\n    </span>\n  </div>\n  <div class=\"dropdown-list {{(_settings.singleSelection)?'single-select-mode':''}}\" [hidden]=\"!_settings.defaultOpen\">\n    <div>\n      <ul class=\"item1\">\n        <li (click)=\"toggleSelectAll()\" *ngIf=\"(_data.length > 0 || _settings.allowRemoteDataSearch) && !_settings.singleSelection && _settings.enableCheckAll && _settings.limitSelection===-1\" class=\"multiselect-item-checkbox\" style=\"border-bottom: 1px solid #ccc;padding:10px\">\n          <input type=\"checkbox\" aria-label=\"multiselect-select-all\" [checked]=\"isAllItemsSelected()\" [disabled]=\"disabled || isLimitSelectionReached()\" />\n          <div>{{!isAllItemsSelected() ? _settings.selectAllText : _settings.unSelectAllText}}</div>\n        </li>\n        <li class=\"filter-textbox\" *ngIf=\"(_data.length>0 || _settings.allowRemoteDataSearch) && _settings.allowSearchFilter\">\n          <input type=\"text\" aria-label=\"multiselect-search\" [readOnly]=\"disabled\" [placeholder]=\"_settings.searchPlaceholderText\" [(ngModel)]=\"filter.text\" (ngModelChange)=\"onFilterTextChange($event)\">\n        </li>\n      </ul>\n    </div>\n    <div class=\"selected-list\" *ngIf=\"_settings.showSelectedList || false\">\n      <span class=\"selected-list__title\">{{_settings.selectedListTitle || ''}}</span>\n      <ul class=\"item2\">\n        <li class=\"selected-list__item\" *ngFor=\"let item of selectedItems let i = index;\" (click)=\"onItemClick($event,item)\" class=\"multiselect-item-checkbox\">\n          <input type=\"checkbox\" aria-label=\"multiselect-item\" [checked]=\"isSelected(item)\" [disabled]=\"disabled || (isLimitSelectionReached() && !isSelected(item)) || item.isDisabled\" />\n          <div>{{item.text}}</div>\n        </li>\n      </ul>\n    </div>\n    <div class=\"selection-list\">\n      <span class=\"selected-list__title\"  *ngIf=\"_settings.showSelectedList || false\" >{{_settings.selectionListTitle || ''}}</span>\n        <ul class=\"item2 select-list\" [style.maxHeight]=\"_settings.maxHeight+'px'\">\n          <li *ngFor=\"let item of _data | multiSelectFilter:filter; let i = index;\" (click)=\"onItemClick($event,item)\" class=\"multiselect-item-checkbox {{isSelected(item) ? 'selected-list__item':''}}\">\n            <input type=\"checkbox\" aria-label=\"multiselect-item\" [checked]=\"isSelected(item)\" [disabled]=\"disabled || (isLimitSelectionReached() && !isSelected(item)) || item.isDisabled\" />\n            <div>{{item.text}}</div>\n          </li>\n          <li class='no-data' *ngIf=\"_data.length == 0 && !_settings.allowRemoteDataSearch\">\n            <h5>{{_settings.noDataAvailablePlaceholderText}}</h5>\n          </li>\n        </ul>\n    </div>\n  </div>\n</div>\n",
+                template: "<div tabindex=\"=0\" (blur)=\"onTouched()\" class=\"multiselect-dropdown\" (clickOutside)=\"closeDropdown()\">\n  <div [class.disabled]=\"disabled\">\n    <span tabindex=\"-1\" class=\"dropdown-btn\" (click)=\"toggleDropdown($event)\">\n      <span *ngIf=\"selectedItems.length == 0\">{{_placeholder}}</span>\n      <span class=\"selected-item\" *ngFor=\"let item of selectedItems;trackBy: trackByFn;let k = index\" [hidden]=\"k > _settings.itemsShowLimit-1\">\n        {{item.text}}\n        <a style=\"padding-top:2px;padding-left:2px;color:white\" (click)=\"onItemClick($event,item)\">x</a>\n      </span>\n      <span style=\"float:right !important;padding-right:4px\">\n        <span style=\"padding-right: 6px;\" *ngIf=\"itemShowRemaining()>0\">+{{itemShowRemaining()}}</span>\n        <span [ngClass]=\"_settings.defaultOpen ? 'dropdown-up' : 'dropdown-down'\"></span>\n      </span>\n    </span>\n  </div>\n  <div class=\"dropdown-list\" [hidden]=\"!_settings.defaultOpen\">\n    <div class=\"dropdown-list_wrap\">\n      <ul class=\"item1\">\n        <li (click)=\"toggleSelectAll()\" *ngIf=\"(_data.length > 0 || _settings.allowRemoteDataSearch) && !_settings.singleSelection && _settings.enableCheckAll && _settings.limitSelection===-1\" class=\"multiselect-item-checkbox\" style=\"border-bottom: 1px solid #ccc;padding:10px\">\n          <input type=\"checkbox\" aria-label=\"multiselect-select-all\" [checked]=\"isAllItemsSelected()\" [disabled]=\"disabled || isLimitSelectionReached()\" />\n          <div>{{!isAllItemsSelected() ? _settings.selectAllText : _settings.unSelectAllText}}</div>\n        </li>\n        <li class=\"filter-textbox\" *ngIf=\"(_data.length>0 || _settings.allowRemoteDataSearch) && _settings.allowSearchFilter\">\n          <input type=\"text\" aria-label=\"multiselect-search\" [readOnly]=\"disabled\" [placeholder]=\"_settings.searchPlaceholderText\" [(ngModel)]=\"filter.text\" (ngModelChange)=\"onFilterTextChange($event)\">\n        </li>\n      </ul>\n    </div>\n    <div class=\"dropdown-list_wrap\">\n      <div *ngIf='_settings.priorityList' class=\"priority-list\">\n        <div class=\"priority-title\">{{_settings.priorityTitle}}</div>\n        <ul class=\"item2\" [style.maxHeight]=\"_settings.maxHeight+'px'\">\n          <li *ngFor=\"let item of _priorityData | multiSelectFilter:filter; let i = index;\" (click)=\"onItemClick($event,item)\" class=\"multiselect-item-checkbox\">\n            <input type=\"checkbox\" aria-label=\"multiselect-item\" [checked]=\"isSelected(item)\" [disabled]=\"disabled || (isLimitSelectionReached() && !isSelected(item)) || item.isDisabled\" />\n            <div>{{item.text}}</div>\n          </li>\n        </ul>\n      </div>\n      <div class=\"normal-list\">\n        <div *ngIf='_settings.priorityList' class=\"normal-title\">{{_settings.normalTitle}}</div>\n        <ul class=\"item2\" [style.maxHeight]=\"_settings.maxHeight+'px'\">\n          <li *ngFor=\"let item of _data | multiSelectFilter:filter; let i = index;\" (click)=\"onItemClick($event,item)\" class=\"multiselect-item-checkbox\">\n            <input type=\"checkbox\" aria-label=\"multiselect-item\" [checked]=\"isSelected(item)\" [disabled]=\"disabled || (isLimitSelectionReached() && !isSelected(item)) || item.isDisabled\" />\n            <div>{{item.text}}</div>\n          </li>\n          <li class='no-data' *ngIf=\"_data.length == 0 && !_settings.allowRemoteDataSearch\">\n            <h5>{{_settings.noDataAvailablePlaceholderText}}</h5>\n          </li>\n        </ul>\n      </div>\n    </div>\n  </div>\n</div>\n",
                 providers: [DROPDOWN_CONTROL_VALUE_ACCESSOR],
                 changeDetection: core.ChangeDetectionStrategy.OnPush,
-                styles: [".multiselect-dropdown{position:relative;width:100%;font-size:inherit;font-family:inherit}.multiselect-dropdown .dropdown-btn{display:inline-block;border:1px solid #adadad;width:100%;padding:6px 12px;margin-bottom:0;font-weight:400;line-height:1.52857143;text-align:left;vertical-align:middle;cursor:pointer;background-image:none;border-radius:4px}.multiselect-dropdown .dropdown-btn .selected-item{border:1px solid #337ab7;margin-right:4px;background:#337ab7;padding:0 5px;color:#fff;border-radius:2px;float:left}.multiselect-dropdown .dropdown-btn .selected-item a{text-decoration:none}.multiselect-dropdown .dropdown-btn .selected-item:hover{box-shadow:1px 1px #959595}.multiselect-dropdown .dropdown-btn .dropdown-down{display:inline-block;top:10px;width:0;height:0;border-top:10px solid #adadad;border-left:10px solid transparent;border-right:10px solid transparent}.multiselect-dropdown .dropdown-btn .dropdown-up{display:inline-block;width:0;height:0;border-bottom:10px solid #adadad;border-left:10px solid transparent;border-right:10px solid transparent}.multiselect-dropdown .disabled>span{background-color:#eceeef}.dropdown-list{position:absolute;padding-top:6px;width:100%;z-index:9999;border:1px solid #ccc;border-radius:3px;background:#fff;margin-top:10px;box-shadow:0 1px 5px #959595}.dropdown-list ul{padding:0;list-style:none;overflow:auto;margin:0}.dropdown-list li{padding:6px 10px;cursor:pointer;text-align:left}.dropdown-list .filter-textbox{border-bottom:1px solid #ccc;position:relative;padding:10px}.dropdown-list .filter-textbox input{border:0;width:100%;padding:0 0 0 26px}.dropdown-list .filter-textbox input:focus{outline:0}.multiselect-item-checkbox input[type=checkbox]{border:0;clip:rect(0 0 0 0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px}.multiselect-item-checkbox input[type=checkbox]:focus+div:before,.multiselect-item-checkbox input[type=checkbox]:hover+div:before{border-color:#337ab7;background-color:#f2f2f2}.multiselect-item-checkbox input[type=checkbox]:active+div:before{transition-duration:0s}.multiselect-item-checkbox input[type=checkbox]+div{position:relative;padding-left:2em;vertical-align:middle;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;cursor:pointer;margin:0;color:#000}.multiselect-item-checkbox input[type=checkbox]+div:before{box-sizing:content-box;content:'';color:#337ab7;position:absolute;top:50%;left:0;width:14px;height:14px;margin-top:-9px;border:2px solid #337ab7;text-align:center;transition:.4s}.multiselect-item-checkbox input[type=checkbox]+div:after{box-sizing:content-box;content:'';position:absolute;transform:scale(0);transform-origin:50%;transition:transform .2s ease-out;background-color:transparent;top:50%;left:4px;width:8px;height:3px;margin-top:-4px;border-style:solid;border-color:#fff;border-width:0 0 3px 3px;-o-border-image:none;border-image:none;transform:rotate(-45deg) scale(0)}.multiselect-item-checkbox input[type=checkbox]:disabled+div:before{border-color:#ccc}.multiselect-item-checkbox input[type=checkbox]:disabled:focus+div:before .multiselect-item-checkbox input[type=checkbox]:disabled:hover+div:before{background-color:inherit}.multiselect-item-checkbox input[type=checkbox]:disabled:checked+div:before{background-color:#ccc}.multiselect-item-checkbox input[type=checkbox]:checked+div:after{content:'';transition:transform .2s ease-out;transform:rotate(-45deg) scale(1)}.multiselect-item-checkbox input[type=checkbox]:checked+div:before{-webkit-animation:.2s ease-in borderscale;animation:.2s ease-in borderscale;background:#337ab7}@-webkit-keyframes borderscale{50%{box-shadow:0 0 0 2px #337ab7}}@keyframes borderscale{50%{box-shadow:0 0 0 2px #337ab7}}"]
+                styles: [".multiselect-dropdown{position:relative;width:100%;font-size:inherit;font-family:inherit}.multiselect-dropdown .dropdown-btn{display:inline-block;border:1px solid #adadad;width:100%;padding:6px 12px;margin-bottom:0;font-weight:400;line-height:1.52857143;text-align:left;vertical-align:middle;cursor:pointer;background-image:none;border-radius:4px}.multiselect-dropdown .dropdown-btn .selected-item{border:1px solid #337ab7;margin-right:4px;background:#337ab7;padding:0 5px;color:#fff;border-radius:2px;float:left}.multiselect-dropdown .dropdown-btn .selected-item a{text-decoration:none}.multiselect-dropdown .dropdown-btn .selected-item:hover{box-shadow:1px 1px #959595}.multiselect-dropdown .dropdown-btn .dropdown-down{display:inline-block;top:10px;width:0;height:0;border-top:10px solid #adadad;border-left:10px solid transparent;border-right:10px solid transparent}.multiselect-dropdown .dropdown-btn .dropdown-up{display:inline-block;width:0;height:0;border-bottom:10px solid #adadad;border-left:10px solid transparent;border-right:10px solid transparent}.multiselect-dropdown .disabled>span{background-color:#eceeef}.dropdown-list{position:absolute;padding-top:6px;width:100%;z-index:9999;border:1px solid #ccc;border-radius:3px;background:#fff;margin-top:10px;box-shadow:0 1px 5px #959595}.dropdown-list ul{padding:0;list-style:none;overflow:auto;margin:0}.dropdown-list li{padding:6px 10px;cursor:pointer;text-align:left}.dropdown-list .filter-textbox{border-bottom:1px solid #ccc;position:relative;padding:10px}.dropdown-list .filter-textbox input{border:0;width:100%;padding:0 0 0 26px}.dropdown-list .filter-textbox input:focus{outline:0}.multiselect-item-checkbox input[type=checkbox]{border:0;clip:rect(0 0 0 0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px}.multiselect-item-checkbox input[type=checkbox]:focus+div:before,.multiselect-item-checkbox input[type=checkbox]:hover+div:before{border-color:#337ab7;background-color:#f2f2f2}.multiselect-item-checkbox input[type=checkbox]:active+div:before{transition-duration:0s}.multiselect-item-checkbox input[type=checkbox]+div{position:relative;padding-left:2em;vertical-align:middle;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;cursor:pointer;margin:0;color:#000}.multiselect-item-checkbox input[type=checkbox]+div:before{box-sizing:content-box;content:\"\";color:#337ab7;position:absolute;top:50%;left:0;width:14px;height:14px;margin-top:-9px;border:2px solid #337ab7;text-align:center;transition:.4s}.multiselect-item-checkbox input[type=checkbox]+div:after{box-sizing:content-box;content:\"\";position:absolute;transform:scale(0);transform-origin:50%;transition:transform .2s ease-out;background-color:transparent;top:50%;left:4px;width:8px;height:3px;margin-top:-4px;border-style:solid;border-color:#fff;border-width:0 0 3px 3px;-o-border-image:none;border-image:none;transform:rotate(-45deg) scale(0)}.multiselect-item-checkbox input[type=checkbox]:disabled+div:before{border-color:#ccc}.multiselect-item-checkbox input[type=checkbox]:disabled:focus+div:before .multiselect-item-checkbox input[type=checkbox]:disabled:hover+div:before{background-color:inherit}.multiselect-item-checkbox input[type=checkbox]:disabled:checked+div:before{background-color:#ccc}.multiselect-item-checkbox input[type=checkbox]:checked+div:after{content:\"\";transition:transform .2s ease-out;transform:rotate(-45deg) scale(1)}.multiselect-item-checkbox input[type=checkbox]:checked+div:before{-webkit-animation:.2s ease-in borderscale;animation:.2s ease-in borderscale;background:#337ab7}@-webkit-keyframes borderscale{50%{box-shadow:0 0 0 2px #337ab7}}@keyframes borderscale{50%{box-shadow:0 0 0 2px #337ab7}}"]
             })
         ], MultiSelectComponent);
         return MultiSelectComponent;
