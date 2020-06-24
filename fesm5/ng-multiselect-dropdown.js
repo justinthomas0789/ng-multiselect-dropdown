@@ -129,7 +129,6 @@ var MultiSelectComponent = /** @class */ (function () {
     Object.defineProperty(MultiSelectComponent.prototype, "priorityData", {
         set: function (value) {
             var _this = this;
-            console.log(value);
             if (value) {
                 this._priorityData = value.map(function (item) {
                     return typeof item === 'string' || typeof item === 'number'
