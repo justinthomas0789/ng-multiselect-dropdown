@@ -130,6 +130,8 @@ var MultiSelectComponent = /** @class */ (function () {
         set: function (value) {
             var _this = this;
             if (value) {
+                var firstItem = value[0];
+                this._sourceDataType = typeof firstItem;
                 this._priorityData = value.map(function (item) {
                     return typeof item === 'string' || typeof item === 'number'
                         ? new ListItem(item)

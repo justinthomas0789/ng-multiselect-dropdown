@@ -115,6 +115,8 @@ let MultiSelectComponent = class MultiSelectComponent {
     }
     set priorityData(value) {
         if (value) {
+            const firstItem = value[0];
+            this._sourceDataType = typeof firstItem;
             this._priorityData = value.map((item) => typeof item === 'string' || typeof item === 'number'
                 ? new ListItem(item)
                 : new ListItem({
