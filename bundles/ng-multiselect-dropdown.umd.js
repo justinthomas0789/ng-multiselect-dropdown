@@ -541,12 +541,12 @@
             this.checkBoundary();
         };
         MultiSelectComponent.prototype.checkBoundary = function () {
-            var boundingElement = this.boundingElement.nativeElement;
-            var rightBoundary = boundingElement.getBoundingClientRect().right - 45;
-            var children = boundingElement.querySelectorAll('.selected-item');
-            if (children.length) {
+            var boundingElement = this.boundingElement.nativeElement.querySelector('.selected-list');
+            if (boundingElement) {
+                var rightBoundary = boundingElement.getBoundingClientRect().right - 50;
+                var children = boundingElement.querySelectorAll('.selected-item');
                 for (var index = 0; index < children.length; index++) {
-                    if (children[index].getBoundingClientRect().right > rightBoundary) {
+                    if (children[index].getBoundingClientRect().left > rightBoundary) {
                         this._settings.itemsShowLimit = index + 1;
                         return;
                     }

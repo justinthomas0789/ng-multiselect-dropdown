@@ -290,12 +290,12 @@ let MultiSelectComponent = class MultiSelectComponent {
         this.checkBoundary();
     }
     checkBoundary() {
-        const boundingElement = this.boundingElement.nativeElement;
-        const rightBoundary = boundingElement.getBoundingClientRect().right - 45;
-        const children = boundingElement.querySelectorAll('.selected-item');
-        if (children.length) {
+        const boundingElement = this.boundingElement.nativeElement.querySelector('.selected-list');
+        if (boundingElement) {
+            const rightBoundary = boundingElement.getBoundingClientRect().right - 50;
+            const children = boundingElement.querySelectorAll('.selected-item');
             for (let index = 0; index < children.length; index++) {
-                if (children[index].getBoundingClientRect().right > rightBoundary) {
+                if (children[index].getBoundingClientRect().left > rightBoundary) {
                     this._settings.itemsShowLimit = index + 1;
                     return;
                 }
