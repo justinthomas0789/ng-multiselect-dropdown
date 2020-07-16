@@ -1,5 +1,5 @@
 import { __decorate } from 'tslib';
-import { Pipe, forwardRef, EventEmitter, ChangeDetectorRef, Input, Output, HostListener, Component, ChangeDetectionStrategy, ElementRef, Directive, NgModule } from '@angular/core';
+import { Pipe, forwardRef, EventEmitter, ChangeDetectorRef, Input, Output, ViewChild, HostListener, Component, ChangeDetectionStrategy, ElementRef, Directive, NgModule } from '@angular/core';
 import { NG_VALUE_ACCESSOR, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -64,6 +64,8 @@ var MultiSelectComponent = /** @class */ (function () {
         this._placeholder = 'Select';
         this._sourceDataType = null; // to keep note of the source data type. could be array of string/number/object
         this._sourceDataFields = []; // store source data fields names
+        this.onTouchedCallback = noop;
+        this.onChangeCallback = noop;
         this.filter = new ListItem(this.data);
         this.defaultSettings = {
             singleSelection: false,
@@ -99,8 +101,6 @@ var MultiSelectComponent = /** @class */ (function () {
         this.onSelectAll = new EventEmitter();
         // tslint:disable-next-line: no-output-rename
         this.onDeSelectAll = new EventEmitter();
-        this.onTouchedCallback = noop;
-        this.onChangeCallback = noop;
     }
     Object.defineProperty(MultiSelectComponent.prototype, "placeholder", {
         set: function (value) {
@@ -173,6 +173,9 @@ var MultiSelectComponent = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
+    MultiSelectComponent.prototype.onResize = function (event) {
+        this.checkBoundary();
+    };
     MultiSelectComponent.prototype.onFilterTextChange = function ($event) {
         this.onFilterChange.emit($event);
     };
@@ -304,6 +307,7 @@ var MultiSelectComponent = /** @class */ (function () {
         }
         this.onChangeCallback(this.emittedValue(this.selectedItems));
         this.onSelect.emit(this.emittedValue(item));
+        this.checkBoundary();
     };
     MultiSelectComponent.prototype.removeSelected = function (itemSel) {
         var _this = this;
@@ -314,6 +318,20 @@ var MultiSelectComponent = /** @class */ (function () {
         });
         this.onChangeCallback(this.emittedValue(this.selectedItems));
         this.onDeSelect.emit(this.emittedValue(itemSel));
+        this.checkBoundary();
+    };
+    MultiSelectComponent.prototype.checkBoundary = function () {
+        var boundingElement = this.boundingElement.nativeElement;
+        var rightBoundary = boundingElement.getBoundingClientRect().right - 45;
+        var children = boundingElement.querySelectorAll('.selected-item');
+        if (children.length) {
+            for (var index = 0; index < children.length; index++) {
+                if (children[index].getBoundingClientRect().right > rightBoundary) {
+                    this._settings.itemsShowLimit = index + 1;
+                    return;
+                }
+            }
+        }
     };
     MultiSelectComponent.prototype.emittedValue = function (val) {
         var _this = this;
@@ -429,6 +447,12 @@ var MultiSelectComponent = /** @class */ (function () {
     __decorate([
         Output('onDeSelectAll')
     ], MultiSelectComponent.prototype, "onDeSelectAll", void 0);
+    __decorate([
+        ViewChild('boundingElement', { static: true })
+    ], MultiSelectComponent.prototype, "boundingElement", void 0);
+    __decorate([
+        HostListener('window:resize', ['$event'])
+    ], MultiSelectComponent.prototype, "onResize", null);
     __decorate([
         HostListener('blur')
     ], MultiSelectComponent.prototype, "onTouched", null);

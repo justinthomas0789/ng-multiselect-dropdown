@@ -284,6 +284,8 @@
             this._placeholder = 'Select';
             this._sourceDataType = null; // to keep note of the source data type. could be array of string/number/object
             this._sourceDataFields = []; // store source data fields names
+            this.onTouchedCallback = noop;
+            this.onChangeCallback = noop;
             this.filter = new ListItem(this.data);
             this.defaultSettings = {
                 singleSelection: false,
@@ -319,8 +321,6 @@
             this.onSelectAll = new core.EventEmitter();
             // tslint:disable-next-line: no-output-rename
             this.onDeSelectAll = new core.EventEmitter();
-            this.onTouchedCallback = noop;
-            this.onChangeCallback = noop;
         }
         Object.defineProperty(MultiSelectComponent.prototype, "placeholder", {
             set: function (value) {
@@ -393,6 +393,9 @@
             enumerable: true,
             configurable: true
         });
+        MultiSelectComponent.prototype.onResize = function (event) {
+            this.checkBoundary();
+        };
         MultiSelectComponent.prototype.onFilterTextChange = function ($event) {
             this.onFilterChange.emit($event);
         };
@@ -524,6 +527,7 @@
             }
             this.onChangeCallback(this.emittedValue(this.selectedItems));
             this.onSelect.emit(this.emittedValue(item));
+            this.checkBoundary();
         };
         MultiSelectComponent.prototype.removeSelected = function (itemSel) {
             var _this = this;
@@ -534,6 +538,20 @@
             });
             this.onChangeCallback(this.emittedValue(this.selectedItems));
             this.onDeSelect.emit(this.emittedValue(itemSel));
+            this.checkBoundary();
+        };
+        MultiSelectComponent.prototype.checkBoundary = function () {
+            var boundingElement = this.boundingElement.nativeElement;
+            var rightBoundary = boundingElement.getBoundingClientRect().right - 45;
+            var children = boundingElement.querySelectorAll('.selected-item');
+            if (children.length) {
+                for (var index = 0; index < children.length; index++) {
+                    if (children[index].getBoundingClientRect().right > rightBoundary) {
+                        this._settings.itemsShowLimit = index + 1;
+                        return;
+                    }
+                }
+            }
         };
         MultiSelectComponent.prototype.emittedValue = function (val) {
             var _this = this;
@@ -649,6 +667,12 @@
         __decorate([
             core.Output('onDeSelectAll')
         ], MultiSelectComponent.prototype, "onDeSelectAll", void 0);
+        __decorate([
+            core.ViewChild('boundingElement', { static: true })
+        ], MultiSelectComponent.prototype, "boundingElement", void 0);
+        __decorate([
+            core.HostListener('window:resize', ['$event'])
+        ], MultiSelectComponent.prototype, "onResize", null);
         __decorate([
             core.HostListener('blur')
         ], MultiSelectComponent.prototype, "onTouched", null);

@@ -1,4 +1,4 @@
-import { EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { EventEmitter, ChangeDetectorRef, ElementRef } from '@angular/core';
 import { ControlValueAccessor } from '@angular/forms';
 import { ListItem, IDropdownSettings } from './multiselect.model';
 import { ListFilterPipe } from './list-filter.pipe';
@@ -14,6 +14,8 @@ export declare class MultiSelectComponent implements ControlValueAccessor {
     _placeholder: string;
     private _sourceDataType;
     private _sourceDataFields;
+    private onTouchedCallback;
+    private onChangeCallback;
     filter: ListItem;
     defaultSettings: IDropdownSettings;
     placeholder: string;
@@ -27,8 +29,8 @@ export declare class MultiSelectComponent implements ControlValueAccessor {
     onDeSelect: EventEmitter<ListItem>;
     onSelectAll: EventEmitter<Array<ListItem>>;
     onDeSelectAll: EventEmitter<Array<ListItem>>;
-    private onTouchedCallback;
-    private onChangeCallback;
+    boundingElement: ElementRef;
+    onResize(event: any): void;
     onFilterTextChange($event: any): void;
     constructor(cdr: ChangeDetectorRef, listFilterPipe: ListFilterPipe);
     onItemClick($event: any, item: ListItem): boolean;
@@ -44,6 +46,7 @@ export declare class MultiSelectComponent implements ControlValueAccessor {
     itemShowRemaining(): number;
     addSelected(item: ListItem): void;
     removeSelected(itemSel: ListItem): void;
+    checkBoundary(): void;
     emittedValue(val: any): any;
     objectify(val: ListItem): {};
     toggleDropdown(evt: any): void;
