@@ -1,5 +1,5 @@
 import { __decorate } from 'tslib';
-import { Pipe, forwardRef, EventEmitter, ChangeDetectorRef, Input, Output, HostListener, Component, ChangeDetectionStrategy, ElementRef, Directive, NgModule } from '@angular/core';
+import { Pipe, forwardRef, EventEmitter, ChangeDetectorRef, Input, Output, ViewChild, HostListener, Component, ChangeDetectionStrategy, ElementRef, Directive, NgModule } from '@angular/core';
 import { NG_VALUE_ACCESSOR, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -59,6 +59,8 @@ let MultiSelectComponent = class MultiSelectComponent {
         this._placeholder = 'Select';
         this._sourceDataType = null; // to keep note of the source data type. could be array of string/number/object
         this._sourceDataFields = []; // store source data fields names
+        this.onTouchedCallback = noop;
+        this.onChangeCallback = noop;
         this.filter = new ListItem(this.data);
         this.defaultSettings = {
             singleSelection: false,
@@ -94,8 +96,6 @@ let MultiSelectComponent = class MultiSelectComponent {
         this.onSelectAll = new EventEmitter();
         // tslint:disable-next-line: no-output-rename
         this.onDeSelectAll = new EventEmitter();
-        this.onTouchedCallback = noop;
-        this.onChangeCallback = noop;
     }
     set placeholder(value) {
         if (value) {
@@ -145,6 +145,9 @@ let MultiSelectComponent = class MultiSelectComponent {
                     isDisabled: item[this._settings.disabledField]
                 }));
         }
+    }
+    onResize(event) {
+        this.checkBoundary();
     }
     onFilterTextChange($event) {
         this.onFilterChange.emit($event);
@@ -274,6 +277,7 @@ let MultiSelectComponent = class MultiSelectComponent {
         }
         this.onChangeCallback(this.emittedValue(this.selectedItems));
         this.onSelect.emit(this.emittedValue(item));
+        this.checkBoundary();
     }
     removeSelected(itemSel) {
         this.selectedItems.forEach(item => {
@@ -283,6 +287,20 @@ let MultiSelectComponent = class MultiSelectComponent {
         });
         this.onChangeCallback(this.emittedValue(this.selectedItems));
         this.onDeSelect.emit(this.emittedValue(itemSel));
+        this.checkBoundary();
+    }
+    checkBoundary() {
+        const boundingElement = this.boundingElement.nativeElement;
+        const rightBoundary = boundingElement.getBoundingClientRect().right - 45;
+        const children = boundingElement.querySelectorAll('.selected-item');
+        if (children.length) {
+            for (let index = 0; index < children.length; index++) {
+                if (children[index].getBoundingClientRect().right > rightBoundary) {
+                    this._settings.itemsShowLimit = index + 1;
+                    return;
+                }
+            }
+        }
     }
     emittedValue(val) {
         const selected = [];
@@ -398,6 +416,12 @@ __decorate([
 __decorate([
     Output('onDeSelectAll')
 ], MultiSelectComponent.prototype, "onDeSelectAll", void 0);
+__decorate([
+    ViewChild('boundingElement', { static: true })
+], MultiSelectComponent.prototype, "boundingElement", void 0);
+__decorate([
+    HostListener('window:resize', ['$event'])
+], MultiSelectComponent.prototype, "onResize", null);
 __decorate([
     HostListener('blur')
 ], MultiSelectComponent.prototype, "onTouched", null);
