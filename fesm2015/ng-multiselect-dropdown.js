@@ -152,6 +152,9 @@ let MultiSelectComponent = class MultiSelectComponent {
     onFilterTextChange($event) {
         this.onFilterChange.emit($event);
     }
+    ngAfterContentChecked() {
+        this.checkBoundary();
+    }
     onItemClick($event, item) {
         if (this.disabled || item.isDisabled) {
             return false;
@@ -292,11 +295,11 @@ let MultiSelectComponent = class MultiSelectComponent {
     checkBoundary() {
         const boundingElement = this.boundingElement.nativeElement.querySelector('.selected-list');
         if (boundingElement) {
-            const rightBoundary = boundingElement.getBoundingClientRect().right - 50;
+            const rightBoundary = boundingElement.getBoundingClientRect().right - 30;
             const children = boundingElement.querySelectorAll('.selected-item');
             for (let index = 0; index < children.length; index++) {
                 if (children[index].getBoundingClientRect().left > rightBoundary) {
-                    this._settings.itemsShowLimit = index + 1;
+                    this._settings.itemsShowLimit = index;
                     return;
                 }
             }

@@ -1,9 +1,9 @@
-import { EventEmitter, ChangeDetectorRef, ElementRef } from '@angular/core';
+import { EventEmitter, ChangeDetectorRef, ElementRef, AfterContentChecked } from '@angular/core';
 import { ControlValueAccessor } from '@angular/forms';
 import { ListItem, IDropdownSettings } from './multiselect.model';
 import { ListFilterPipe } from './list-filter.pipe';
 export declare const DROPDOWN_CONTROL_VALUE_ACCESSOR: any;
-export declare class MultiSelectComponent implements ControlValueAccessor {
+export declare class MultiSelectComponent implements ControlValueAccessor, AfterContentChecked {
     private cdr;
     private listFilterPipe;
     _settings: IDropdownSettings;
@@ -33,6 +33,7 @@ export declare class MultiSelectComponent implements ControlValueAccessor {
     onResize(event: any): void;
     onFilterTextChange($event: any): void;
     constructor(cdr: ChangeDetectorRef, listFilterPipe: ListFilterPipe);
+    ngAfterContentChecked(): void;
     onItemClick($event: any, item: ListItem): boolean;
     writeValue(value: any): void;
     registerOnChange(fn: any): void;
