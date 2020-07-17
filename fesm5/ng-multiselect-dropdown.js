@@ -179,6 +179,9 @@ var MultiSelectComponent = /** @class */ (function () {
     MultiSelectComponent.prototype.onFilterTextChange = function ($event) {
         this.onFilterChange.emit($event);
     };
+    MultiSelectComponent.prototype.ngAfterContentChecked = function () {
+        this.checkBoundary();
+    };
     MultiSelectComponent.prototype.onItemClick = function ($event, item) {
         if (this.disabled || item.isDisabled) {
             return false;
@@ -323,11 +326,13 @@ var MultiSelectComponent = /** @class */ (function () {
     MultiSelectComponent.prototype.checkBoundary = function () {
         var boundingElement = this.boundingElement.nativeElement.querySelector('.selected-list');
         if (boundingElement) {
-            var rightBoundary = boundingElement.getBoundingClientRect().right - 50;
+            var rightBoundary = boundingElement.getBoundingClientRect().right - 30;
             var children = boundingElement.querySelectorAll('.selected-item');
             for (var index = 0; index < children.length; index++) {
+                console.log(children[index].getBoundingClientRect().left, rightBoundary);
                 if (children[index].getBoundingClientRect().left > rightBoundary) {
-                    this._settings.itemsShowLimit = index + 1;
+                    console.log(children[index]);
+                    this._settings.itemsShowLimit = index;
                     return;
                 }
             }
