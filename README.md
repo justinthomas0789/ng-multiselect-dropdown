@@ -186,6 +186,8 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   </tr>
 </table>
 
+Customized the package for particular use cases
+
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->
 <!-- ALL-CONTRIBUTORS-LIST:END -->
